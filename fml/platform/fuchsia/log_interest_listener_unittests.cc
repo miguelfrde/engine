@@ -74,9 +74,6 @@ class MockLogSink : public component_testing::LocalComponentImpl,
     }
   }
 
-  void Connect(fuchsia_logger::LogSinkConnectRequest& request,
-               ConnectCompleter::Sync& completer) override {}
-
   void ConnectStructured(
       fuchsia_logger::LogSinkConnectStructuredRequest& request,
       ConnectStructuredCompleter::Sync& completer) override {}
@@ -114,7 +111,7 @@ TEST_F(LogInterestListenerFuchsia, AsyncWaitForInterestChange) {
     realm.Teardown([&](auto result) { complete = true; });
     RunLoopUntil([&]() { return complete; });
   });
-  auto client_end = realm.component().Connect<fuchsia_logger::LogSink>();
+  auto client_end = realm.component().ConnectStructured<fuchsia_logger::LogSink>();
   ASSERT_TRUE(client_end.is_ok());
   LogInterestListener listener(std::move(client_end.value()), dispatcher());
   listener.AsyncWaitForInterestChanged();
